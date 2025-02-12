@@ -14,3 +14,4 @@ class Book:
         else:
             stat = "Checked out"
         return f"{self.t} by {self.a} (ISBN: {self.i}) - {stat}"
+        d

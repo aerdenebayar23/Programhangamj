@@ -1,5 +1,6 @@
 
 class Member:
+    d
     def __init__(self, mid, nm):
        self.mid = mid  
        self.nm = nm  
