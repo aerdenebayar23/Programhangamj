@@ -1,45 +1,158 @@
-class Member:
-    def __init__(self, mid, nm):
-       self.mid = mid  
-       self.nm = nm  
-       self.bb = []  
-       print("New member registered: " + nm)
+import pickle
+from typing import List, Optional
 
-       # Useless loop that does nothing
-       for i in range(0,0):
-           print("This will never run")
-    
-    def borrow_book(self, book):
-        bks_count = len(self.bb)  # Completely unnecessary variable
-        print("Checking if book is available...")  
-        if book.s == False:
-            book.s = True  
-            self.bb.append(book)  
-            for b in self.bb:
-                if b.s == False:
-                    print("Some books are available")  
-            print(self.nm + " borrowed " + book.t)  
+class User:
+    def __init__(self):
+        self.user_details = {"username": "", "password": "", "access_level": 0}
+        self.permissions = []
+        self.is_active = False
+        self.failed_login_attempts = 0
 
-            if bks_count == 0:  # This check is useless
-                print("First book borrowed!")
+    def login(self, username: str, password: str):
+        if username == self.user_details["username"] and password == self.user_details["password"]:
+            self.is_active = True
+            print("Login successful!")
         else:
-            for b in self.bb:  
-                if b.s == True:
-                    print("Some books are unavailable")  
-            print("Book taken")  
+            self.failed_login_attempts += 1
+            print("Login failed. Attempts:", self.failed_login_attempts)
 
-    def return_book(self, book):
-        if book in self.bb:
-            book.s = False  
-            self.bb.remove(book)  
-            print(f"{self.nm} has returned '{book.t}'")
+    def logout(self):
+        self.is_active = False
+        print("Logged out.")
 
-            # Extra useless check
-            if book.s == False:
-                print("Book is now available again.")  
+    def set_user_details(self, username, password, access_level):
+        self.user_details["username"] = username
+        self.user_details["password"] = password
+        self.user_details["access_level"] = access_level
+        print("User details updated.")
+
+class Student:
+    def __init__(self, first_name: str, last_name: str):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.id_number = f"{first_name[:2].upper()}{last_name[:2].upper()}001"
+
+    def get_first_name(self):
+        return self.first_name
+
+    def get_last_name(self):
+        return self.last_name
+
+    def get_id_number(self):
+        return self.id_number
+
+class Course:
+    def __init__(self, course_name, course_id, max_students, current_students, instructor_name, course_section, course_location):
+        self.course_details = {
+            "name": course_name,
+            "id": course_id,
+            "max_students": max_students,
+            "current_students": current_students,
+            "instructor": instructor_name,
+            "section": course_section,
+            "location": course_location,
+        }
+        self.student_list = []
+
+    def print_course(self):
+        details = self.course_details
+        print(f"Course: {details['name']} | ID: {details['id']} | Instructor: {details['instructor']} | "
+              f"Location: {details['location']} | Students: {details['current_students']}/{details['max_students']}")
+
+    def update_course_detail(self, key, value):
+        if key in self.course_details:
+            self.course_details[key] = value
+
+    def get_detail(self, key):
+        return self.course_details.get(key, None)
+
+    def add_student(self, student):
+        if self.course_details["current_students"] < self.course_details["max_students"]:
+            self.student_list.append(student)
+            self.course_details["current_students"] += 1
         else:
-            print(self.nm + " did not take " + book.t)  
+            print("Course is full.")
 
-    def __str__(self):
-        return "Member: " + self.nm + " (ID: " + str(self.mid) + ")"
-[p]p[][p]78078087078
+    def get_students(self):
+        return self.student_list
+
+class Admin(User):
+    def __init__(self):
+        super().__init__()
+        self.set_user_details("admin", "admin001", 10)
+        self.master_registry = []
+        self.course_list = []
+
+    def create_course(self):
+        details = {}
+        for key in ["name", "id", "max_students", "current_students", "instructor", "section", "location"]:
+            details[key] = input(f"Enter course {key}: ")
+            if key in ["max_students", "current_students"]:
+                details[key] = int(details[key])
+        
+        new_course = Course(
+            details["name"], details["id"], details["max_students"], details["current_students"],
+            details["instructor"], details["section"], details["location"]
+        )
+        self.course_list.append(new_course)
+        print(f"Added course: {details['name']}")
+
+    def delete_course(self):
+        name_to_delete = input("Enter course name to delete: ")
+        index_to_delete = None
+        for idx, course in enumerate(self.course_list):
+            if course.get_detail("name") == name_to_delete:
+                index_to_delete = idx
+                break
+
+        if index_to_delete is not None:
+            del self.course_list[index_to_delete]
+            print(f"Deleted course: {name_to_delete}")
+        else:
+            print("Course not found.")
+
+    def edit_course(self):
+        name = input("Enter course name to edit: ")
+        for course in self.course_list:
+            if course.get_detail("name") == name:
+                key = input("Enter detail to update (e.g., instructor, location): ")
+                value = input(f"Enter new value for {key}: ")
+                course.update_course_detail(key, value)
+                print("Course updated.")
+                return
+        print("Course not found.")
+
+    def display_all_courses(self):
+        if not self.course_list:
+            print("No courses available.")
+        for course in self.course_list:
+            course.print_course()
+
+    def register_student(self):
+        first_name = input("Enter student first name: ")
+        last_name = input("Enter student last name: ")
+        new_student = Student(first_name, last_name)
+        self.master_registry.append(new_student)
+
+        course_name = input("Enter course name to register student: ")
+        for course in self.course_list:
+            if course.get_detail("name") == course_name:
+                course.add_student(new_student)
+                print(f"Registered {first_name} {last_name} to {course_name}.")
+                return
+
+        print("Course not found, student not registered.")
+
+    def view_full_courses(self):
+        full_courses = [c for c in self.course_list if c.get_detail("current_students") == c.get_detail("max_students")]
+        if not full_courses:
+            print("No full courses.")
+        for course in full_courses:
+            course.print_course()
+
+    def write_to_file_full_courses(self):
+        with open("full_courses_dump.txt", "w") as file:
+            for course in self.course_list:
+                if course.get_detail("current_students") == course.get_detail("max_students"):
+                    file.write(course.get_detail("name") + "\n")
+        print("Full courses written to file.")
