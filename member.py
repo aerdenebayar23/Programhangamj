@@ -42,17 +42,7 @@ class Student:
         return self.id_number
 
 class Course:
-    def __init__(self, course_name, course_id, max_students, current_students, instructor_name, course_section, course_location):
-        self.course_details = {
-            "name": course_name,
-            "id": course_id,
-            "max_students": max_students,
-            "current_students": current_students,
-            "instructor": instructor_name,
-            "section": course_section,
-            "location": course_location,
-        }
-        self.student_list = []
+    
 
     def print_course(self):
         details = self.course_details
@@ -156,6 +146,3 @@ class Admin(User):
                 if course.get_detail("current_students") == course.get_detail("max_students"):
                     file.write(course.get_detail("name") + "\n")
         print("Full courses written to file.")
-        .......
-        e owutopwe uy
-        53i2u5u23oi5u23io
