@@ -17,10 +17,7 @@ class User:
             print("Login failed. Attempts:", self.failed_login_attempts)
 
     def logout(self):
-        self.is_active = False
-        print("Logged out.")
 
-    def set_user_details(self, username, password, access_level):
         self.user_details["username"] = username
         self.user_details["password"] = password
         self.user_details["access_level"] = access_level
@@ -28,9 +25,6 @@ class User:
 
 class Student:
     def __init__(self, first_name: str, last_name: str):
-        self.first_name = first_name
-        self.last_name = last_name
-        self.id_number = f"{first_name[:2].upper()}{last_name[:2].upper()}001"
 
     def get_first_name(self):
         return self.first_name
@@ -45,9 +39,6 @@ class Course:
     
 
     def print_course(self):
-        details = self.course_details
-        print(f"Course: {details['name']} | ID: {details['id']} | Instructor: {details['instructor']} | "
-              f"Location: {details['location']} | Students: {details['current_students']}/{details['max_students']}")
 
     def update_course_detail(self, key, value):
         if key in self.course_details:
@@ -118,9 +109,6 @@ class Admin(User):
         for course in self.course_list:
             course.print_course()
 
-    def register_student(self):
-        first_name = input("Enter student first name: ")
-        last_name = input("Enter student last name: ")
         new_student = Student(first_name, last_name)
         self.master_registry.append(new_student)
 
