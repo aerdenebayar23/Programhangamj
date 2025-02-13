@@ -156,3 +156,6 @@ class Admin(User):
                 if course.get_detail("current_students") == course.get_detail("max_students"):
                     file.write(course.get_detail("name") + "\n")
         print("Full courses written to file.")
+        .......
+        e owutopwe uy
+        53i2u5u23oi5u23io
